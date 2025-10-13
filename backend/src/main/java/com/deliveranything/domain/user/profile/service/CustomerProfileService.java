@@ -130,28 +130,6 @@ public class CustomerProfileService {
   }
 
   @Transactional
-  public CustomerAddress addAddress(Long userId, String addressName, String address, Double latitude, Double longitude) {
-    CustomerProfile profile = getProfile(userId);
-    if (profile == null) return null;
-
-    CustomerAddress saved = customerAddressRepository.save(CustomerAddress.builder()
-        .customerProfile(profile)
-        .addressName(addressName)
-        .address(address)
-        .latitude(latitude)
-        .longitude(longitude)
-        .build());
-
-    if (profile.getDefaultAddressId() == null) {
-      profile.updateDefaultAddressId(saved.getId());
-      customerProfileRepository.save(profile);
-    }
-
-    log.info("배송지 추가 완료: userId={}, profileId={}, addressId={}", userId, profile.getId(), saved.getId());
-    return saved;
-  }
-
-  @Transactional
   public CustomerAddress addAddressByProfileId(Long profileId, String addressName, String address, Double latitude, Double longitude) {
     CustomerProfile profile = getProfileByProfileId(profileId);
     if (profile == null) return null;

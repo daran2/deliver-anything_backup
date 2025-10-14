@@ -39,6 +39,7 @@ public class Notification extends BaseEntity {
   @Column(length = 500)
   private String data; // JSON
 
+  @Builder.Default
   @Column(nullable = false)
   private boolean isRead = false;
 

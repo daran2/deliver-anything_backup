@@ -22,6 +22,126 @@
 <br>
 
 <details>
+<summary>🌐 시스템 구성도 (System Architecture Diagram)</summary>
+
+```mermaid
+graph TD
+    A[Client App] --> B(API Gateway / Load Balancer)
+    B --> C(Backend Application - Spring Boot)
+
+    subgraph Backend Services
+        direction LR
+        C --> D(Auth)
+        C --> E(User)
+        C --> F(Store)
+        C --> G(Product)
+        C --> H(Order)
+        C --> I(Payment)
+        C --> J(Delivery)
+        C --> K(Review)
+        C --> L(Notification)
+        C --> M(Search)
+        C --> N(Settlement)
+    end
+
+    subgraph Data Stores
+        direction LR
+        C --> O[(MySQL)]
+        C --> P[(Redis)]
+        C --> Q[(Elasticsearch)]
+    end
+
+    subgraph External Integrations
+        direction LR
+        C --> R{{AWS S3}}
+        C --> S{{SMS Gateway}}
+        C --> T{{Payment Gateway}}
+    end
+
+    subgraph Infrastructure & CI/CD
+        direction LR
+        U[GitHub Actions] --> V[Docker]
+        U --> W[Terraform]
+        V --> Cloud[Cloud Environment]
+        W --> Cloud
+        Cloud --> C
+    end
+
+    style A fill:#E0E0E0,stroke:#333,stroke-width:2px
+    style B fill:#C0C0C0,stroke:#333,stroke-width:2px
+    style C fill:#A0A0A0,stroke:#333,stroke-width:2px
+    style D fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style E fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style F fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style G fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style H fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style I fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style J fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style K fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style L fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style M fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style N fill:#B0B0B0,stroke:#333,stroke-width:1px
+    style O fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style P fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style Q fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style R fill:#90EE90,stroke:#333,stroke-width:2px
+    style S fill:#90EE90,stroke:#333,stroke-width:2px
+    style T fill:#90EE90,stroke:#333,stroke-width:2px
+    style U fill:#D3D3D3,stroke:#333,stroke-width:2px
+    style V fill:#D3D3D3,stroke:#333,stroke-width:2px
+    style W fill:#D3D3D3,stroke:#333,stroke-width:2px
+    style Cloud fill:#F8F8F8,stroke:#333,stroke-width:2px
+```
+
+### 🌐 시스템 구성도 상세 설명
+
+`Deliver Anything` 프로젝트는 확장성과 안정성을 고려한 마이크로서비스 지향 아키텍처로 설계되었습니다. 주요 구성 요소는 다음과 같습니다.
+
+1.  **클라이언트 (Client App)**
+    *   사용자가 서비스를 이용하는 웹 또는 모바일 애플리케이션입니다.
+
+2.  **API Gateway / Load Balancer**
+    *   클라이언트의 모든 요청을 받아 백엔드 애플리케이션으로 라우팅하고 부하를 분산합니다. Nginx 또는 Nginx Proxy Manager가 이 역할을 수행할 수 있습니다.
+
+3.  **백엔드 애플리케이션 (Backend Application - Spring Boot)**
+    *   Java와 Spring Boot 프레임워크로 개발된 핵심 애플리케이션입니다.
+    *   **모듈형 모놀리식(Modular Monolith)** 형태로, 각 도메인(`Auth`, `Order`, `Delivery` 등)이 명확하게 분리되어 있습니다.
+    *   **Spring Security**를 통해 사용자 인증 및 권한 부여를 처리합니다.
+    *   **WebSocket**을 사용하여 실시간 배달 현황 추적 등 양방향 통신을 지원합니다.
+    *   **Springdoc OpenAPI**를 통해 API 문서를 자동 생성하고 관리합니다.
+
+    *   **Backend Services (주요 도메인)**
+        *   **Auth (인증)**: 사용자 로그인, 회원가입, 토큰 관리 등 인증/인가를 담당합니다.
+        *   **User (사용자)**: 사용자 프로필, 주소지 관리 등 사용자 정보를 관리합니다.
+        *   **Store (상점)**: 상점 정보 등록 및 관리, 카테고리 등을 담당합니다.
+        *   **Product (상품)**: 상품 정보, 재고 관리 등을 담당합니다.
+        *   **Order (주문)**: 주문 생성, 상태 변경 등 주문 라이프사이클을 관리합니다.
+        *   **Payment (결제)**: 외부 결제 게이트웨이 연동을 통해 결제를 처리합니다.
+        *   **Delivery (배달)**: 배달 요청, 라이더 매칭, 실시간 위치 추적 등 배달 과정을 관리합니다.
+        *   **Review (리뷰)**: 상점 및 라이더에 대한 리뷰를 관리합니다.
+        *   **Notification (알림)**: 사용자에게 푸시 알림, SMS 등을 발송합니다.
+        *   **Search (검색)**: 상품, 상점 등 서비스 내 검색 기능을 제공합니다.
+        *   **Settlement (정산)**: 상점 및 라이더에 대한 정산 로직을 처리합니다.
+
+4.  **데이터 저장소 (Data Stores)**
+    *   **MySQL Database**: 주요 비즈니스 데이터(사용자, 주문, 상품 정보 등)를 저장하는 관계형 데이터베이스입니다. **JPA**와 **Querydsl**을 활용하여 데이터 접근을 효율화합니다.
+    *   **Redis**: 캐싱, 사용자 세션 관리, 실시간 데이터 처리(예: 배달 위치 정보), Pub/Sub 메시징 등 고성능 데이터 처리에 사용됩니다.
+    *   **Elasticsearch**: `Search Service`를 위해 사용되며, 상품 및 상점 검색 등 복잡하고 빠른 전문 검색 기능을 제공합니다.
+
+5.  **외부 연동 서비스 (External Integrations)**
+    *   **AWS S3**: 이미지, 동영상 등 대용량 미디어 파일을 저장하고 관리하는 데 사용되는 클라우드 스토리지 서비스입니다.
+    *   **SMS Gateway**: 사용자에게 인증 코드, 주문 알림 등 SMS를 발송하기 위한 외부 SMS 발송 서비스와 연동됩니다.
+    *   **Payment Gateway**: 결제 처리를 위해 외부 결제 서비스 제공업체(PG사)와 연동됩니다.
+
+6.  **인프라 및 CI/CD (Infrastructure & CI/CD)**
+    *   **Docker**: 백엔드 애플리케이션을 컨테이너화하여 환경 독립적인 배포를 가능하게 합니다.
+    *   **Terraform**: 클라우드 인프라(AWS EC2, RDS 등)를 코드로 정의하고 관리(Infrastructure as Code)하여 자동화된 프로비저닝 및 배포를 지원합니다.
+    *   **GitHub Actions**: 코드 변경 시 자동으로 빌드, 테스트, 배포를 수행하는 CI/CD 파이프라인을 구축하여 개발 효율성을 높입니다. `main` 브랜치 푸시 시 Docker 이미지 빌드 및 GHCR 푸시, AWS EC2 Blue/Green 배포가 자동화됩니다.
+</details>
+
+<br>
+
+<details>
 <summary>📊 ERD (Entity-Relationship Diagram)</summary>
 
 ```mermaid

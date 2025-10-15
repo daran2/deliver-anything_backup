@@ -1,7 +1,7 @@
 package com.deliveranything.domain.user.user.controller;
 
-import com.deliveranything.domain.auth.dto.SwitchProfileResult;
-import com.deliveranything.domain.auth.service.AuthService;
+import com.deliveranything.domain.auth.auth.dto.SwitchProfileResult;
+import com.deliveranything.domain.auth.auth.service.AuthService;
 import com.deliveranything.domain.user.profile.dto.AvailableProfilesResponse;
 import com.deliveranything.domain.user.profile.dto.CreateProfileRequest;
 import com.deliveranything.domain.user.profile.dto.CreateProfileResponse;

@@ -17,8 +17,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.deliveranything.domain.auth.service.AuthService;
-import com.deliveranything.domain.auth.service.RefreshTokenService;
+import com.deliveranything.domain.auth.auth.controller.AuthController;
+import com.deliveranything.domain.auth.auth.service.AuthService;
+import com.deliveranything.domain.auth.auth.service.RefreshTokenService;
 import com.deliveranything.domain.user.profile.enums.ProfileType;
 import com.deliveranything.domain.user.profile.service.ProfileService;
 import com.deliveranything.domain.user.user.entity.User;

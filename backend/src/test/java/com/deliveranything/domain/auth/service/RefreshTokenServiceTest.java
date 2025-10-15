@@ -13,8 +13,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.deliveranything.domain.auth.dto.RefreshTokenDto;
-import com.deliveranything.domain.auth.repository.RefreshTokenRepository;
+import com.deliveranything.domain.auth.auth.dto.RefreshTokenDto;
+import com.deliveranything.domain.auth.auth.repository.RefreshTokenRepository;
+import com.deliveranything.domain.auth.auth.service.AccessTokenService;
+import com.deliveranything.domain.auth.auth.service.RefreshTokenService;
+import com.deliveranything.domain.auth.auth.service.TokenBlacklistService;
+import com.deliveranything.domain.auth.auth.service.TokenRefreshRateLimiter;
 import com.deliveranything.domain.user.user.entity.User;
 import com.deliveranything.domain.user.user.repository.UserRepository;
 import com.deliveranything.global.exception.CustomException;

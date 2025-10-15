@@ -179,6 +179,12 @@ custom:
   cookie:
     domain: ${COOKIE_DOMAIN:localhost}
 
+  # 이메일 설정 추가
+  email:
+    from: ${MAIL_USERNAME}
+    verification:
+      expirationMinutes: 5
+
 gemini:
   api:
     key: ${GEMINI_API_KEY}

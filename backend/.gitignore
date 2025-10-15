@@ -36,6 +36,12 @@ out/
 ### VS Code ###
 .vscode/
 
-
+### H2 DB ###
 dev.mv.db
 dev.trace.db
+
+### QClass ###
+src/main/generated
+
+### Environment Variable ###
+.env

@@ -11,14 +11,10 @@ terraform {
 # Locals
 ########################
 locals {
-  # 단순 네이밍: prefix-ec2
   ec2_name_tag = "${var.prefix}-ec2"
 
   # 공통 태그
-  common_tags = merge(
-    { Project = var.prefix },
-    var.additional_tags
-  )
+  common_tags = var.additional_tags
 
   name_prefix = var.prefix
 
@@ -36,6 +32,7 @@ locals {
     npm_image        = var.npm_image
     redis_image      = var.redis_image
     mysql_image      = var.mysql_image
+    elasticsearch_image = var.elasticsearch_image
   })
 }
 
@@ -233,6 +230,45 @@ resource "aws_key_pair" "ec2_key" {
 }
 
 ########################
+# S3 Bucket (Public Read)
+########################
+resource "aws_s3_bucket" "public_bucket" {
+  bucket = "${var.prefix}-public-bucket"
+
+  tags = merge(local.common_tags, { Name = "${var.prefix}-public-bucket" })
+}
+
+# 퍼블릭 액세스 차단 설정을 해제
+resource "aws_s3_bucket_public_access_block" "public_bucket_block" {
+  bucket = aws_s3_bucket.public_bucket.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+# 버킷 정책 추가: 모든 사용자에게 GetObject (읽기) 권한 부여
+resource "aws_s3_bucket_policy" "public_read_policy" {
+  bucket = aws_s3_bucket.public_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject",
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = "s3:GetObject",
+        Resource = ["${aws_s3_bucket.public_bucket.arn}/*"]
+      }
+    ]
+  })
+
+  depends_on = [aws_s3_bucket_public_access_block.public_bucket_block]
+}
+
+########################
 # EC2
 ########################
 resource "aws_instance" "ec2" {
@@ -253,6 +289,23 @@ resource "aws_instance" "ec2" {
   user_data = local.ec2_user_data
 
   tags = merge(local.common_tags, { Name = local.ec2_name_tag })
+}
+
+########################
+# Elastic IP (EIP)
+########################
+resource "aws_eip" "ec2_eip" {
+  instance = aws_instance.ec2.id
+
+  tags = merge(local.common_tags, { Name = "${var.prefix}-eip" })
+}
+
+output "ec2_public_ip" {
+  value = aws_eip.ec2_eip.public_ip
+}
+
+output "ec2_public_dns" {
+  value = aws_eip.ec2_eip.public_dns
 }
 
 ###############################################
@@ -323,7 +376,7 @@ data "aws_iam_policy_document" "gha_permissions" {
     ]
     resources = [
       "arn:${data.aws_partition.current.partition}:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/*",
-      "arn:${data.aws_partition.current.partition}:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:document/AWS-RunShellScript"
+      "arn:${data.aws_partition.current.partition}:ssm:${var.region}::document/AWS-RunShellScript"
     ]
   }
 }

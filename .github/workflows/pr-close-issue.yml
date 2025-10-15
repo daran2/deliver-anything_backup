@@ -1,80 +1,54 @@
-name: Close issues & delete feature branch on dev merge
+name: Close linked issues on dev merge
 
 on:
   pull_request:
     types: [closed]
 
-permissions:
-  issues: write
-  contents: write
-  pull-requests: read
-
 jobs:
-  on-dev-merge:
-    if: >
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == 'dev'
+  close-issues-and-delete-branch:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
     runs-on: ubuntu-latest
     steps:
-      - name: Close linked issues
+      - name: Close issue from branch number and delete branch
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
-            const text = `${pr.title}\n${pr.body || ''}`;
+            const head = pr.head.ref; // ex) feat/be/123
+            const m = head.match(/(\d+)$/);
 
-            // #123, (#123)
-            const directRefs = [...text.matchAll(/#(\d+)/g)].map(m => Number(m[1]));
-            // closes/fixes/resolves #123 (대소문자 무시)
-            const verbRefs = [...text.matchAll(/\b(closes?|fix(?:e|es)?s?|resolves?)\s+#(\d+)/ig)].map(m => Number(m[2]));
-
-            const issueSet = new Set([...directRefs, ...verbRefs]);
-
-            if (issueSet.size === 0) {
-              console.log('ℹ️ No linked issues found in PR title/body.');
-            } else {
-              const { owner, repo } = context.repo;
-              for (const issue_number of issueSet) {
-                try {
-                  await github.rest.issues.update({ owner, repo, issue_number, state: 'closed' });
-                  console.log(`✅ Closed issue #${issue_number}`);
-                } catch (e) {
-                  console.log(`⚠️ Skip closing #${issue_number}: ${e.message}`);
-                }
+            if (m) {
+              const issueNumber = parseInt(m[1], 10);
+              try {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  state: "closed"
+                });
+                core.info(`✅ Closed issue #${issueNumber} (from branch ${head})`);
+              } catch (e) {
+                core.warning(`Failed to close issue #${issueNumber}: ${e.message}`);
               }
+            } else {
+              core.info(`No issue number found in branch "${head}". Skipping close.`);
             }
 
-      - name: Delete head branch (skip protected/main/dev and fork PRs)
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pr = context.payload.pull_request;
-            const headRef   = pr.head.ref;   // ex) feat/be/123
-            const baseRef   = pr.base.ref;   // dev
-            const headRepo  = pr.head.repo?.full_name;
-            const thisRepo  = context.repo.owner + '/' + context.repo.repo;
-
-            // 포크에서 온 PR은 삭제 불가
-            if (headRepo !== thisRepo) {
-              console.log(`ℹ️ Head branch is on a fork (${headRepo}); cannot delete.`);
-              return;
-            }
-
+            // 병합된 작업 브랜치 삭제 (보호 브랜치 제외)
             const protectedBranches = ['main', 'dev'];
-            if (protectedBranches.includes(headRef)) {
-              console.log(`ℹ️ Skip deleting protected branch: ${headRef}`);
-              return;
-            }
-
-            try {
-              await github.rest.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `heads/${headRef}`
-              });
-              console.log(`🗑️ Deleted branch: ${headRef}`);
-            } catch (e) {
-              console.log(`⚠️ Failed to delete ${headRef}: ${e.message}`);
+            const headBranch = pr.head.ref;
+            if (!protectedBranches.includes(headBranch)) {
+              try {
+                await github.rest.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `heads/${headBranch}`
+                });
+                core.info(`🗑️ Deleted branch: ${headBranch}`);
+              } catch (e) {
+                core.warning(`Failed to delete branch ${headBranch}: ${e.message}`);
+              }
+            } else {
+              core.info(`Skip deleting protected branch: ${headBranch}`);
             }

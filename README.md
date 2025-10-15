@@ -67,30 +67,39 @@ graph TD
         Cloud --> C
     end
 
-    style A fill:#E0E0E0,stroke:#333,stroke-width:2px
-    style B fill:#C0C0C0,stroke:#333,stroke-width:2px
-    style C fill:#A0A0A0,stroke:#333,stroke-width:2px
-    style D fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style E fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style F fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style G fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style H fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style I fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style J fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style K fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style L fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style M fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style N fill:#B0B0B0,stroke:#333,stroke-width:1px
-    style O fill:#ADD8E6,stroke:#333,stroke-width:2px
-    style P fill:#ADD8E6,stroke:#333,stroke-width:2px
-    style Q fill:#ADD8E6,stroke:#333,stroke-width:2px
-    style R fill:#90EE90,stroke:#333,stroke-width:2px
-    style S fill:#90EE90,stroke:#333,stroke-width:2px
-    style T fill:#90EE90,stroke:#333,stroke-width:2px
-    style U fill:#D3D3D3,stroke:#333,stroke-width:2px
-    style V fill:#D3D3D3,stroke:#333,stroke-width:2px
-    style W fill:#D3D3D3,stroke:#333,stroke-width:2px
-    style Cloud fill:#F8F8F8,stroke:#333,stroke-width:2px
+    %% --- Styles ---
+    style A fill:#5DADE2,stroke:#1B4F72,stroke-width:2px,color:#fff
+    style B fill:#3498DB,stroke:#1B4F72,stroke-width:2px,color:#fff
+    style C fill:#2E86C1,stroke:#1B2631,stroke-width:2px,color:#fff
+
+    %% Backend microservices
+    style D fill:#A569BD,stroke:#4A235A,stroke-width:1.5px,color:#fff
+    style E fill:#A569BD,stroke:#4A235A,stroke-width:1.5px,color:#fff
+    style F fill:#48C9B0,stroke:#0E6251,stroke-width:1.5px,color:#fff
+    style G fill:#48C9B0,stroke:#0E6251,stroke-width:1.5px,color:#fff
+    style H fill:#45B39D,stroke:#0E6655,stroke-width:1.5px,color:#fff
+    style I fill:#45B39D,stroke:#0E6655,stroke-width:1.5px,color:#fff
+    style J fill:#52BE80,stroke:#145A32,stroke-width:1.5px,color:#fff
+    style K fill:#52BE80,stroke:#145A32,stroke-width:1.5px,color:#fff
+    style L fill:#58D68D,stroke:#1D8348,stroke-width:1.5px,color:#fff
+    style M fill:#5DADE2,stroke:#1B4F72,stroke-width:1.5px,color:#fff
+    style N fill:#5DADE2,stroke:#1B4F72,stroke-width:1.5px,color:#fff
+
+    %% Data stores
+    style O fill:#F5B041,stroke:#7E5109,stroke-width:2px,color:#000
+    style P fill:#F8C471,stroke:#7E5109,stroke-width:2px,color:#000
+    style Q fill:#FAD7A0,stroke:#7E5109,stroke-width:2px,color:#000
+
+    %% External integrations
+    style R fill:#82E0AA,stroke:#1E8449,stroke-width:2px,color:#000
+    style S fill:#7DCEA0,stroke:#1E8449,stroke-width:2px,color:#000
+    style T fill:#73C6B6,stroke:#117864,stroke-width:2px,color:#000
+
+    %% Infra & CI/CD
+    style U fill:#D2B4DE,stroke:#512E5F,stroke-width:2px,color:#000
+    style V fill:#BB8FCE,stroke:#512E5F,stroke-width:2px,color:#000
+    style W fill:#C39BD3,stroke:#512E5F,stroke-width:2px,color:#000
+    style Cloud fill:#D5DBDB,stroke:#424949,stroke-width:2px,color:#000
 ```
 
 ### 🌐 시스템 구성도 상세 설명
@@ -130,7 +139,7 @@ graph TD
 
 5.  **외부 연동 서비스 (External Integrations)**
     *   **AWS S3**: 이미지, 동영상 등 대용량 미디어 파일을 저장하고 관리하는 데 사용되는 클라우드 스토리지 서비스입니다.
-    *   **SMS Gateway**: 사용자에게 인증 코드, 주문 알림 등 SMS를 발송하기 위한 외부 SMS 발송 서비스와 연동됩니다.
+    *   **SMS Gateway**: 사용자에게 인증 코드, 리뷰 알림 등 SMS를 발송하기 위한 외부 SMS 발송 서비스와 연동됩니다.
     *   **Payment Gateway**: 결제 처리를 위해 외부 결제 서비스 제공업체(PG사)와 연동됩니다.
 
 6.  **인프라 및 CI/CD (Infrastructure & CI/CD)**
